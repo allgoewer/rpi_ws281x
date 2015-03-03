@@ -133,25 +133,25 @@ static int map_registers(ws2811_t *ws2811)
         return -1;
     }
 
-    device->dma = mapmem(dma_addr, sizeof(dma_t));
+	device->dma = mapmem(dma_addr, (sizeof(dma_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     if (!device->dma)
     {
         return -1;
     }
 
-    device->pwm = mapmem(PWM_OFFSET + base, sizeof(pwm_t));
+	device->pwm = mapmem(PWM_OFFSET + base, (sizeof(pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     if (!device->pwm)
     {
         return -1;
     }
 
-    device->gpio = mapmem(GPIO_OFFSET + base, sizeof(gpio_t));
+	device->gpio = mapmem(GPIO_OFFSET + base, (sizeof(gpio_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     if (!device->gpio)
     {
         return -1;
     }
 
-    device->cm_pwm = mapmem(CM_PWM_OFFSET + base, sizeof(cm_pwm_t));
+	device->cm_pwm = mapmem(CM_PWM_OFFSET + base, (sizeof(cm_pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     if (!device->cm_pwm)
     {
         return -1;
@@ -173,22 +173,22 @@ static void unmap_registers(ws2811_t *ws2811)
 
     if (device->dma)
     {
-        unmapmem((void *)device->dma, sizeof(dma_t));
+		unmapmem((void *)device->dma, (sizeof(dma_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     }
 
     if (device->pwm)
     {
-        unmapmem((void *)device->pwm, sizeof(pwm_t));
+		unmapmem((void *)device->pwm, (sizeof(pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     }
 
     if (device->cm_pwm)
     {
-        unmapmem((void *)device->cm_pwm, sizeof(cm_pwm_t));
+		unmapmem((void *)device->cm_pwm, (sizeof(cm_pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     }
 
     if (device->gpio)
     {
-        unmapmem((void *)device->gpio, sizeof(gpio_t));
+		unmapmem((void *)device->gpio, (sizeof(gpio_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
     }
 }
 
