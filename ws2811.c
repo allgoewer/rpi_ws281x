@@ -116,6 +116,24 @@ static int max_channel_led_count(ws2811_t *ws2811)
 }
 
 /**
+ * Unmap a physical address and length from virtual memory.
+ *
+ * @param    addr  Virtual address pointer of device registers.
+ * @param    len   Length of mapped region.
+ *
+ * @returns  None
+ */
+static void unmap_device(volatile void *addr, const uint32_t len)
+{
+    uint32_t virt = (uint32_t)addr;
+    uint32_t start_page_addr = virt & PAGE_MASK;
+    uint32_t end_page_addr = (virt + len) & PAGE_MASK;
+    uint32_t pages = end_page_addr - start_page_addr + 1;
+
+    munmap((void *)addr, PAGE_SIZE * pages);
+}
+
+/**
  * Map all devices into userspace memory.
  *
  * @param    ws2811  ws2811 instance pointer.
@@ -133,25 +151,25 @@ static int map_registers(ws2811_t *ws2811)
         return -1;
     }
 
-	device->dma = mapmem(dma_addr, (sizeof(dma_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+	device->dma = mapmem(dma_addr, sizeof(dma_t));
     if (!device->dma)
     {
         return -1;
     }
 
-	device->pwm = mapmem(PWM_OFFSET + base, (sizeof(pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+	device->pwm = mapmem(PWM_OFFSET + base, sizeof(pwm_t));
     if (!device->pwm)
     {
         return -1;
     }
 
-	device->gpio = mapmem(GPIO_OFFSET + base, (sizeof(gpio_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+	device->gpio = mapmem(GPIO_OFFSET + base, sizeof(gpio_t));
     if (!device->gpio)
     {
         return -1;
     }
 
-	device->cm_pwm = mapmem(CM_PWM_OFFSET + base, (sizeof(cm_pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+	device->cm_pwm = mapmem(CM_PWM_OFFSET + base, sizeof(cm_pwm_t));
     if (!device->cm_pwm)
     {
         return -1;
@@ -173,22 +191,22 @@ static void unmap_registers(ws2811_t *ws2811)
 
     if (device->dma)
     {
-		unmapmem((void *)device->dma, (sizeof(dma_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+        unmap_device(device->dma, sizeof(dma_t));
     }
 
     if (device->pwm)
     {
-		unmapmem((void *)device->pwm, (sizeof(pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+        unmap_device(device->pwm, sizeof(pwm_t));
     }
 
     if (device->cm_pwm)
     {
-		unmapmem((void *)device->cm_pwm, (sizeof(cm_pwm_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+        unmap_device(device->cm_pwm, sizeof(cm_pwm_t));
     }
 
     if (device->gpio)
     {
-		unmapmem((void *)device->gpio, (sizeof(gpio_t) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
+        unmap_device(device->gpio, sizeof(gpio_t));
     }
 }
 
