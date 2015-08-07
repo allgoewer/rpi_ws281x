@@ -31,7 +31,7 @@ clean:
 	rm -rf *.o
 
 realclean: clean
-	rm -rf $(TARGETTEST) $(TARGETLIB)
+	rm -rf $(TARGETTEST) $(TARGETLIB) $(DEPENDFILE)
 
 .PHONY: clean realclean
 
