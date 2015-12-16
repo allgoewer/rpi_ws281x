@@ -3,7 +3,7 @@ AR = ar
 
 CCFLAGS = -O3 -Wall -Werror
 
-DEPENDFILE = .depend
+DEPENDFILE = dep
 
 SRCLIB = ws2811.c pwm.c dma.c board_info.c mailbox.c
 OBJLIB = $(SRCLIB:%.c=%.o)
